@@ -1,0 +1,17 @@
+<div *ngFor="let service of oilServices" class="card p-3 mb-3">
+
+  <h6>Last Service KM: {{service.lastServiceKm}}</h6>
+  <h6>Next Due KM: 
+    <span class="text-danger" *ngIf="service.nextDueKm <= 30000">
+      {{service.nextDueKm}}
+    </span>
+    <span *ngIf="service.nextDueKm > 30000">
+      {{service.nextDueKm}}
+    </span>
+  </h6>
+
+  <button (click)="downloadBill(service.id)" *ngIf="service.serviceBillName">
+    Download Bill
+  </button>
+
+</div>

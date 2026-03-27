@@ -1,0 +1,338 @@
+<div class="card shadow border-0">
+  <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+    <span class="fw-semibold">Vehicle Information</span>
+    <button class="btn btn-outline-light btn-sm" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+  </div>
+
+  <div class="card-body">
+    <div class="row g-4">
+
+      <!-- LEFT SIDE -->
+      <div class="col-md-6">
+
+        <!-- Vehicle Number -->
+        <div class="mb-4">
+          <h4 class="fw-bold mb-0">{{ vehicle?.vehicleNumber }}</h4>
+          <small class="text-muted">Registered Vehicle Details</small>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="row g-3">
+
+          <div class="col-6 col-sm-4 col-md-6" *ngFor="let item of [
+      { label: 'Owner Name', value: vehicle?.ownerName },
+      { label: 'Vehicle Type', value: vehicle?.vehicleType },
+      { label: 'Brand', value: vehicle?.brand },
+      { label: 'Color', value: vehicle?.color },
+      { label: 'Fuel Type', value: vehicle?.fuelType },
+      { label: 'Manufacturing Year', value: vehicle?.manufacturingYear },
+      { label: 'Current Km', value: vehicle?.currentKm }
+    ]">
+            <div class="info-box">
+              <div class="info-content">
+                <span class="label">{{ item.label }}</span>
+                <span class="value">{{ item.value }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Document Section -->
+          <div class="col-12">
+            <div class="info-box d-flex justify-content-between align-items-center">
+              <div>
+                <span class="label d-block">Vehicle Document</span>
+                <span class="fw-semibold">Insurance Copy</span>
+              </div>
+              <button class="btn btn-sm btn-primary" (click)="downloadDoc()">
+                <i class="bi bi-eye me-1"></i> View
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Reminder Section -->
+        <div class="mt-4">
+          <h6 class="fw-semibold mb-2">Reminders</h6>
+
+          <div class="d-flex flex-wrap gap-2">
+            <span class="badge bg-danger-subtle text-danger px-3 py-2">
+              ⚠ FC Renewal Due
+            </span>
+
+            <span class="badge bg-warning-subtle text-warning px-3 py-2">
+              ⚠ Insurance Renewal
+            </span>
+
+            <span class="badge bg-info-subtle text-info px-3 py-2">
+              ⚠ Oil Change Required
+            </span>
+
+            <span class="badge bg-secondary-subtle text-secondary px-3 py-2">
+              ⚠ Tyre Check Required
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT SIDE (CAROUSEL) -->
+      <!-- RIGHT SIDE (CAROUSEL WITH UPLOAD + DELETE UI) -->
+      <div class="col-md-6">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-semibold mb-0">Vehicle Images</h6>
+        </div>
+
+        <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
+
+          <div class="carousel-inner rounded-3 shadow-sm">
+
+            <!-- 🔥 Image Slides -->
+            <div class="carousel-item" *ngFor="let img of images; let i = index" [class.active]="i === 0">
+
+              <div class="carousel-wrapper">
+
+                <img [src]="'http://localhost:8080/uploads/' + img" class="img-fluid w-100" alt="Vehicle Image">
+
+                <!-- Overlay -->
+                <div class="carousel-overlay">
+                  <button class="btn btn-light btn-sm me-2" (click)="viewImage(img)">
+                    <i class="bi bi-eye"></i>
+                  </button>
+
+                  <button class="btn btn-danger btn-sm" (click)="openDeleteModal()">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 🔥 Upload Slide (Last Slide) -->
+            <div class="carousel-item" [class.active]="images.length === 0">
+
+              <div class="upload-slide text-center p-5">
+
+                <i class="bi bi-cloud-upload fs-1 text-primary"></i>
+                <p class="mt-3">Upload New Image</p>
+
+                <input *ngIf="showFileInput" type="file" accept="image/*" class="form-control mb-3"
+                  (change)="onImageSelected($event)">
+
+                <button class="btn btn-primary" [disabled]="!selectedImageFile" (click)="uploadImage()">
+                  Upload
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Controls -->
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+          </button>
+
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Service Accordion -->
+    <div class="card shadow-sm border-0 mt-4">
+      <div class="card-body">
+
+        <h5 class="fw-semibold mb-3">Vehicle Services & Documents</h5>
+
+        <div class="accordion custom-accordion" id="serviceAccordion">
+
+          <!-- FC -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#fcCollapse">
+                <i class="bi bi-file-earmark-text me-2 text-danger"></i>
+                FC Certificate
+              </button>
+            </h2>
+            <div id="fcCollapse" class="accordion-collapse collapse show" data-bs-parent="#serviceAccordion">
+              <div class="accordion-body">
+                <p><strong>Expiry Date:</strong> 01/04/2026</p>
+                <span class="badge bg-danger">Renewal Due Soon</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Insurance -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#insuranceCollapse">
+                <i class="bi bi-shield-check me-2 text-warning"></i>
+                Insurance
+              </button>
+            </h2>
+            <div id="insuranceCollapse" class="accordion-collapse collapse" data-bs-parent="#serviceAccordion">
+              <div class="accordion-body">
+                <p><strong>Expiry Date:</strong> 08/04/2026</p>
+                <p><strong>Provider:</strong> HDFC ERGO</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Oil Service -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#oilCollapse">
+                <i class="bi bi-droplet-half me-2 text-info"></i>
+                Oil Service
+              </button>
+            </h2>
+            <div id="oilCollapse" class="accordion-collapse collapse" data-bs-parent="#serviceAccordion">
+              <div class="accordion-body">
+                     <div class="top-0 end-0 m-2  text-end">
+                        <div class="btn-group">
+
+  <!-- ✅ If NO oil → show Add -->
+  <button *ngIf="!oil"
+          class="btn btn-sm btn-primary m-2"
+          (click)="openAddOilModal()">
+    <i class="bi bi-plus-lg"></i>
+  </button>
+
+  <!-- ✅ If oil exists → show Edit -->
+  <button *ngIf="oil"
+          class="btn btn-sm btn-warning m-2"
+          (click)="openEditOilModal(oil, $event)">
+    <i class="bi bi-pencil"></i>
+  </button>
+
+  <!-- ✅ If oil exists → show Delete -->
+  <button *ngIf="oil"
+          class="btn btn-sm btn-danger m-2"
+          (click)="deleteOil(oil.id)">
+    <i class="bi bi-trash"></i>
+  </button>
+
+</div>
+                        </div>
+
+                <div *ngIf="oil; else noOilData">
+
+                  <div class="card shadow-sm border-0">
+                    <div class="card-body">
+
+                      <div class="row g-3">
+                   
+
+                        <!-- Last Service -->
+                        <div class="col-12 col-md-6">
+                          <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted">Last Service</small>
+                            <div class="fw-semibold">
+                              {{ oil.lastServiceDate | date:'mediumDate' }}
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Service KM -->
+                        <div class="col-12 col-md-6">
+                          <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted">Service KM</small>
+                            <div class="fw-semibold">
+                              {{ oil.lastServiceKm }} KM
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted">Interval KM</small>
+                            <div class="fw-semibold">
+                              {{ oil.serviceIntervalKm }} KM
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Oil Brand -->
+                        <div class="col-12 col-md-6">
+                          <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted">Oil Brand</small>
+                            <div class="fw-semibold">
+                              {{ oil.oilBrand }} ({{ oil.oilQuantityLitres }} L)
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Vendor -->
+                        <div class="col-12 col-md-6">
+                          <div class="p-3 bg-light rounded h-100">
+                            <small class="text-muted">Vendor</small>
+                            <div class="fw-semibold">
+                              {{ oil.serviceVendor }}
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <!-- Next Service -->
+                      <div class="mt-3 text-center">
+                        <span class="badge bg-info px-3 py-2">
+                          Next Service Due at: {{ oil.nextDueKm }} KM
+                        </span>
+                      </div>
+
+                      <!-- View Bill Button -->
+                      <div class="mt-3 text-center" *ngIf="oil.serviceBillPath">
+                        <button class="btn btn-primary btn-sm px-4" (click)="viewOilBill(oil)">
+                          <i class="bi bi-file-earmark"></i> View Bill
+                        </button>
+                      </div>
+
+                    </div>
+                  </div>
+
+                </div>
+
+                <ng-template #noOilData>
+                  <p class="text-muted text-center mb-0">No oil service records found.</p>
+                </ng-template>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Tyre Service -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#tyreCollapse">
+                <i class="bi bi-circle me-2 text-secondary"></i>
+                Tyre Service
+              </button>
+            </h2>
+            <div id="tyreCollapse" class="accordion-collapse collapse" data-bs-parent="#serviceAccordion">
+              <div class="accordion-body">
+           <app-tyre></app-tyre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+

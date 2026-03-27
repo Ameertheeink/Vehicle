@@ -1,0 +1,33 @@
+.custom-navbar {
+  background-color: #ffffff;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+/* Toggle button styled to match magenta theme */
+.toggle-btn {
+  background-color: #C2185B;
+  border: none;
+  color: #ffffff;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  background-color: #AD1457;
+  transform: scale(1.05);
+}
+
+/* Page title styling */
+.page-title {
+  font-size: 18px;
+  color: #970747;
+}
