@@ -1,9 +1,11 @@
 package com.vehicle.demo.service.impl;
 
+import com.vehicle.demo.dto.OilServiceReminderDTO;
 import com.vehicle.demo.dto.OilServiceRequestDTO;
 import com.vehicle.demo.dto.OilServiceResponseDTO;
 import com.vehicle.demo.entity.OilService;
 import com.vehicle.demo.entity.Vehicle;
+import com.vehicle.demo.enums.ReminderStatus;
 import com.vehicle.demo.exception.ResourceNotFoundException;
 import com.vehicle.demo.repository.OilServiceRepository;
 import com.vehicle.demo.repository.VehicleRepository;
@@ -103,19 +105,56 @@ public class OilServiceServiceImpl implements OilServiceService {
                         new ResourceNotFoundException("Oil Service not found with id: " + oilServiceId));
 
         try {
+            String baseDir = System.getProperty("user.dir");
 
-            String uploadDir = System.getProperty("user.dir") + "/uploads/oil/";
+            // 🔥 STEP 1: VALIDATE FILE TYPE FIRST
+            String contentType = file.getContentType();
+
+            if (contentType == null ||
+                    !(contentType.equals("application/pdf") ||
+                            contentType.equals("image/jpeg") ||
+                            contentType.equals("image/png"))) {
+
+                throw new RuntimeException("Only PDF, JPEG, PNG files are allowed");
+            }
+
+            String originalFileName = file.getOriginalFilename();
+
+            if (originalFileName == null ||
+                    !(originalFileName.toLowerCase().endsWith(".pdf") ||
+                            originalFileName.toLowerCase().endsWith(".jpg") ||
+                            originalFileName.toLowerCase().endsWith(".jpeg") ||
+                            originalFileName.toLowerCase().endsWith(".png"))) {
+
+                throw new RuntimeException("Invalid file type");
+            }
+
+            // 🔥 STEP 2: DELETE OLD FILE IF EXISTS
+            if (oilService.getServiceBillPath() != null) {
+
+                java.nio.file.Path oldFilePath = java.nio.file.Paths.get(
+                        baseDir + "/" + oilService.getServiceBillPath()
+                );
+
+                java.nio.file.Files.deleteIfExists(oldFilePath);
+            }
+
+            // 🔥 STEP 3: CREATE DIRECTORY
+            String uploadDir = baseDir + "/uploads/oil/";
             java.nio.file.Files.createDirectories(java.nio.file.Paths.get(uploadDir));
 
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            // 🔥 STEP 4: SAVE NEW FILE
+            String newFileName = System.currentTimeMillis() + "_" + originalFileName;
+
             java.nio.file.Path filePath =
-                    java.nio.file.Paths.get(uploadDir + fileName);
+                    java.nio.file.Paths.get(uploadDir + newFileName);
 
             java.nio.file.Files.write(filePath, file.getBytes());
 
-            oilService.setServiceBillPath("uploads/oil/" + fileName);
-            oilService.setServiceBillName(file.getOriginalFilename());
-            oilService.setServiceBillType(file.getContentType());
+            // 🔥 STEP 5: UPDATE DB
+            oilService.setServiceBillPath("uploads/oil/" + newFileName);
+            oilService.setServiceBillName(originalFileName);
+            oilService.setServiceBillType(contentType);
             oilService.setUpdatedAt(LocalDateTime.now());
 
             oilServiceRepository.save(oilService);
@@ -124,7 +163,6 @@ public class OilServiceServiceImpl implements OilServiceService {
             throw new RuntimeException("Failed to upload service bill", e);
         }
     }
-
     // =============================
     // MAPPER
     // =============================
@@ -212,9 +250,6 @@ public class OilServiceServiceImpl implements OilServiceService {
         oilService.setServiceVendor(requestDTO.getServiceVendor());
 
         // recalculate nextDueKm
-        oilService.setNextDueKm(
-                requestDTO.getLastServiceKm() + requestDTO.getServiceIntervalKm()
-        );
 
         OilService updated = oilServiceRepository.save(oilService);
 
@@ -233,7 +268,9 @@ public class OilServiceServiceImpl implements OilServiceService {
         }
 
         try {
-            Files.deleteIfExists(Paths.get(oilService.getServiceBillPath()));
+            Files.deleteIfExists(
+                    Paths.get(System.getProperty("user.dir") + "/" + oilService.getServiceBillPath())
+            );
         } catch (IOException e) {
             throw new RuntimeException("Failed to delete bill file");
         }
@@ -246,5 +283,66 @@ public class OilServiceServiceImpl implements OilServiceService {
     }
 
 
+
+    @Override
+    public List<OilServiceReminderDTO> getReminders(int threshold) {
+
+        List<Vehicle> vehicles = vehicleRepository.findAll();
+
+        return vehicles.stream()
+                .map(vehicle -> {
+
+                    OilService service = oilServiceRepository
+                            .findTopByVehicleIdOrderByLastServiceDateDesc(vehicle.getId());
+
+                    // Skip vehicles with no oil service
+                    if (service == null) {
+                        return null;
+                    }
+
+                    int remainingKm = service.getNextDueKm() - vehicle.getCurrentKm();
+
+                    ReminderStatus status = calculateStatus(remainingKm, threshold);
+
+                    OilServiceReminderDTO dto = new OilServiceReminderDTO();
+                    dto.setVehicleId(vehicle.getId());
+                    dto.setVehicleNumber(vehicle.getVehicleNumber());
+                    dto.setRemainingKm(remainingKm);
+                    dto.setStatus(status);
+
+                    return dto;
+                })
+                .filter(dto -> dto != null)
+                .sorted((a, b) -> {
+
+                    int priorityA = getPriority(a.getStatus());
+                    int priorityB = getPriority(b.getStatus());
+
+                    if (priorityA != priorityB) {
+                        return Integer.compare(priorityA, priorityB);
+                    }
+
+                    return Integer.compare(a.getRemainingKm(), b.getRemainingKm());
+                })
+                .toList();
+    }
+    private ReminderStatus calculateStatus(int remainingKm, int threshold) {
+        if (remainingKm <= 0) {
+            return ReminderStatus.OVERDUE;
+        } else if (remainingKm <= threshold) {
+            return ReminderStatus.DUE_SOON;
+        } else {
+            return ReminderStatus.SAFE;
+        }
+    }
+
+    private int getPriority(ReminderStatus status) {
+        switch (status) {
+            case OVERDUE: return 1;
+            case DUE_SOON: return 2;
+            case SAFE: return 3;
+            default: return 4;
+        }
+    }
 
 }

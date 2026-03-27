@@ -1,6 +1,7 @@
 package com.vehicle.demo.controller;
 
 import com.vehicle.demo.dto.ApiResponse;
+import com.vehicle.demo.dto.OilServiceReminderDTO;
 import com.vehicle.demo.dto.OilServiceRequestDTO;
 import com.vehicle.demo.dto.OilServiceResponseDTO;
 import com.vehicle.demo.service.OilServiceService;
@@ -101,7 +102,7 @@ public class OilServiceController {
         logger.info("Bill download initiated for oilServiceId: {}", id);
 
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=" + fileName)
+                .header("Content-Disposition", "inline; filename=" + fileName)
                 .header("Content-Type", contentType)
                 .body(fileData);
     }
@@ -171,6 +172,44 @@ public class OilServiceController {
 
         return ResponseEntity.ok(
                 Map.of("message", "Oil service deleted successfully")
+        );
+    }
+
+    // =========================================================
+// GET OIL SERVICE REMINDERS
+// =========================================================
+    @GetMapping("/reminders")
+    public ResponseEntity<ApiResponse<List<OilServiceReminderDTO>>> getReminders(
+            @RequestParam(defaultValue = "500") int threshold) {
+
+        logger.info("Fetching oil service reminders with threshold: {}", threshold);
+
+        List<OilServiceReminderDTO> reminders =
+                oilServiceService.getReminders(threshold);
+
+        logger.info("Total reminders found: {}", reminders.size());
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Reminders fetched successfully", reminders)
+        );
+    }
+    // =========================================================
+// GET TOP PRIORITY REMINDER
+// =========================================================
+    @GetMapping("/reminders/top")
+    public ResponseEntity<ApiResponse<OilServiceReminderDTO>> getTopReminder(
+            @RequestParam(defaultValue = "500") int threshold) {
+
+        logger.info("Fetching top priority reminder");
+
+        OilServiceReminderDTO reminder =
+                oilServiceService.getReminders(threshold)
+                        .stream()
+                        .findFirst()
+                        .orElse(null);
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "Top reminder fetched successfully", reminder)
         );
     }
 }

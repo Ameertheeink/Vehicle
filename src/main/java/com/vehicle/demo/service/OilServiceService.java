@@ -1,5 +1,6 @@
 package com.vehicle.demo.service;
 
+import com.vehicle.demo.dto.OilServiceReminderDTO;
 import com.vehicle.demo.dto.OilServiceRequestDTO;
 import com.vehicle.demo.dto.OilServiceResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,7 @@ public interface OilServiceService {
     public String getServiceBillName(Long oilServiceId) ;
 
     List<OilServiceResponseDTO> getAllOilServices();
+    List<OilServiceReminderDTO> getReminders(int threshold);
     OilServiceResponseDTO updateOilService(Long id, OilServiceRequestDTO requestDTO);
 
     void deleteBill(Long id);
