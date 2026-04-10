@@ -1,0 +1,359 @@
+twilio
+WC72F7LG3VWY3XA7GBXMCM3R
+
+Vehicle number : TN23 DA3602
+FC date : 01/04/2026
+Insurance:08/04/2026
+Permit: 13/08/2029
+Pollution : 10/04/2026
+Oil service date : 01/01/2026
+Oil service km : 95000
+Tyre changed on kms : 95000
+
+Reminder for FC date,Insurance renewal,oil change date, tyre need to change after 95000 kms . notifications may be sms or whatsapp
+
+
+
+vehicles
+add http://localhost:8080/api/vehicles
+
+{
+  "vehicleNumber": "TN01AB1234",
+  "ownerName": "Ameer",
+  "vehicleType": "CAR",
+  "brand": "Toyota",
+  "model": "Innova",
+  "fuelType": "PETROL",
+  "manufacturingYear": 2022,
+  "color": "White",
+  "currentKm": 15000
+}
+
+
+http://localhost:8080/api/vehicles/1/km
+
+
+http://localhost:8080/api/vehicles/TN01AB1234/document upload content-type multipart/form-data
+
+http://localhost:8080/api/vehicles/TN01AB1234/document download
+
+
+update  PUT http://localhost:8080/api/vehicles/1
+
+http://localhost:8080/api/vehicles/1/images  delete images
+
+{
+  "ownerName": "Ameer",
+  "vehicleType": "Car",
+  "brand": "Hyundai",
+  "model": "i20",
+  "fuelType": "Petrol",
+  "manufacturingYear": 2022,
+  "color": "White",
+  "currentKm": 15000,
+  "updatedBy": "admin"
+}
+DELETE http://localhost:8080/api/vehicles/1
+
+
+CREATE TABLE vehicle_images (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    vehicle_id BIGINT NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_vehicle
+    FOREIGN KEY (vehicle_id)
+    REFERENCES vehicles(id)
+    ON DELETE CASCADE
+);
+
+
+http://localhost:8080/api/vehicles/1/images
+
+
+GET
+http://localhost:8080/api/vehicles/1
+
+
+To create a professional and high-contrast interface for your vehicle reminder app using Midnight Blue and Half-White, you should follow a hierarchy that ensures critical data like vehicle numbers and expiry dates are immediately legible.
+
+Based on the technical data and maintenance tracking requirements in your document (Vehicle TN23 DA3602), here is the recommended color and icon strategy:
+
+1. Typography & Font Colors
+To maintain accessibility against your chosen backgrounds:
+
+On Midnight Blue Background (Headers/Navigation):
+
+
+Primary Text: Use Pure White (#FFFFFF) for the vehicle number (TN23 DA3602) and main titles.
+
+
+Secondary Text: Use Light Gray (#D1D1D1) for labels like "Engine Number" or "Chassis Number" to create visual depth.
+
+On Half-White Background (Content/Tables):
+
+
+Primary Text: Use Midnight Blue (#191970) for table data such as owner_name or policy_number to tie the brand together.
++1
+
+
+Actionable Text: Use a Vibrant Blue (#007AFF) for links like "View Bill PDF" or "Download Certificate".
++1
+
+2. Icon Colors (Status-Based)
+Icons should not just be decorative; they should serve as status indicators for your maintenance records.
++1
+
+
+Default State Icons: Use Slate Blue or Steel Gray for standard icons (e.g., the "Oil Brand" or "Vendor" icons).
++1
+
+
+Urgent/Expired Alerts: Use Bright Red (#FF3B30) for icons next to dates that are approaching or past due, such as the 01/04/2026 FC date.
++2
+
+
+Active/Safe Icons: Use Emerald Green (#34C759) for records with long-term validity, like the 13/08/2029 Permit.
+
+
+Warning Icons: Use Amber/Orange (#FF9500) for items like "Remaining KM" when the vehicle is close to the 100,000 KM service threshold.
+
+3. UI Element Colors
+
+Buttons: Use Midnight Blue with White text for primary actions like "Update Current KM".
++1
+
+
+Dividers & Borders: Use a very faint Light Blue-Gray to separate the detailed vehicles table fields without cluttering the design.
++1
+
+
+Card Backgrounds: On the Half-White page, use slightly elevated White cards with subtle Midnight Blue shadows to highlight specific sections like "Oil Service" or "Insurance Records".
++1
+
+
+in dashboard
+
+
+upcoming oil change vehicle number and id
+kilometer completed 8500/10000kms
+
+upcoming tyre change vehicle number and id
+kilometer completed 89999/100000kms
+
+Upcoming Insurance renewal Vehicle number and id
+expirng on 23/02/2026
+
+upcoming FC(Fitness certificate) renewal Vehicle number and id
+expring on 28/02/2026
+
+upcoming pollution certificate reneval Vehicle number and id
+expring on 28/02/2026
+
+i am planning keep this information as card . suggest me bootstrap icon with content
+
+
+
+
+when i click view in list page it should route to details-page  by id
+http://localhost:8080/api/vehicles/1
+{
+    "id": 1,
+    "vehicleNumber": "TN01AB1234",
+    "ownerName": "Ameerthee",
+    "vehicleType": "Car",
+    "brand": "Hyundai",
+    "model": "i20",
+    "fuelType": "Petrol",
+    "manufacturingYear": 2022,
+    "color": "White",
+    "currentKm": 21000,
+    "createdAt": "2026-02-09T17:00:33.116775"
+
+
+	and also i have document download
+	http://localhost:8080/api/vehicles/TN01AB1234/document
+
+	vehicle image view section
+	http://localhost:8080/api/vehicles/3/images
+
+
+
+[
+    "1770650836986_IMG20240120190724.jpg",
+    "1770650837102_IMG20240120190743.jpg",
+    "1770650837115_IMG20240120191042.jpg",
+    "1770731526435_IMG20240120190724.jpg",
+    "1770731526693_IMG20240120190743.jpg",
+    "1770731526712_IMG20240120191042.jpg"
+]
+based on no of images
+
+
+First need to add vehicle on list page.
+modal should pop up
+http://localhost:8080/api/vehicles
+{
+  "vehicleNumber": "TN33AB1234",
+  "ownerName": "Ganesh",
+  "vehicleType": "CAR",
+  "brand": "Maruti",
+  "model": "Ertiga",
+  "fuelType": "PETROL",
+  "manufacturingYear": 2025,
+  "color": "White",
+  "currentKm": 20000
+}
+
+add vehicle cancel button.
+another model should pop up to upload document based on vehicle number
+ask need upload any document if yes , upload button will show and then upload will done.
+
+http://localhost:8080/api/vehicles/3/document
+content type multipart/form-data
+
+
+for vehicle number kindly follow the strict regular expression.
+for vehicle type use select dropdown option to chose
+for brand use select dropdown option to chose
+for model use select dropdown option to chose
+for fuel type use selct dropdwon option to chose CNG,Petrol,Diesel or battery
+for Manufacture year  4 digit
+for color if possible give option select
+kilometer only numbers need validations too
+need validations too
+
+
+.sidebar {
+  width: 250px;
+  height: 92vh;
+  background-color: #F8F8F8;
+  border-right: 1px solid #e0e0e0;
+  padding-top: 10px;
+}
+
+oil service
+
+create oil service
+http://localhost:8080/api/oil-services
+request body
+{
+  "vehicleId": 1,
+  "lastServiceKm": 25000,
+  "serviceIntervalKm": 5000,
+  "lastServiceDate": "2026-02-10",
+  "oilBrand": "Castrol GTX",
+  "oilQuantityLitres": 3.50,
+  "serviceVendor": "ABC Auto Garage"
+}
+rsponse
+{
+    "success": true,
+    "message": "Oil service created successfully",
+    "data": {
+        "id": 1,
+        "vehicleId": 1,
+        "lastServiceKm": 25000,
+        "serviceIntervalKm": 5000,
+        "lastServiceDate": "2026-02-10",
+        "oilBrand": "Castrol GTX",
+        "oilQuantityLitres": 3.50,
+        "serviceVendor": "ABC Auto Garage",
+        "nextDueKm": 30000,
+        "serviceBillPath": null,
+        "serviceBillName": null,
+        "serviceBillType": null,
+        "createdAt": "2026-02-12T16:43:29.3447907",
+        "updatedAt": "2026-02-12T16:43:29.3447907"
+    }
+}
+
+get oil service info by vehicle id
+http://localhost:8080/api/oil-services/vehicle/1
+
+response
+{
+    "success": true,
+    "message": "Oil services fetched successfully",
+    "data": [
+        {
+            "id": 1,
+            "vehicleId": 1,
+            "lastServiceKm": 25000,
+            "serviceIntervalKm": 5000,
+            "lastServiceDate": "2026-02-10",
+            "oilBrand": "Castrol GTX",
+            "oilQuantityLitres": 3.50,
+            "serviceVendor": "ABC Auto Garage",
+            "nextDueKm": 30000,
+            "serviceBillPath": null,
+            "serviceBillName": null,
+            "serviceBillType": null,
+            "createdAt": "2026-02-12T16:43:29.344791",
+            "updatedAt": "2026-02-12T16:43:29.344791"
+        }
+    ]
+}
+
+upload bill
+http://localhost:8080/api/oil-services/1/bill
+file
+
+download bill
+http://localhost:8080/api/oil-services/1/bill
+
+http://localhost:8080/api/oil-services
+[
+    {
+        "id": 1,
+        "vehicleId": 1,
+        "lastServiceKm": 25000,
+        "serviceIntervalKm": 5000,
+        "lastServiceDate": "2026-02-10",
+        "oilBrand": "Castrol GTX",
+        "oilQuantityLitres": 3.50,
+        "serviceVendor": "ABC Auto Garage",
+        "nextDueKm": 30000,
+        "serviceBillPath": "uploads/oil/1770895476086_oil-change-invoice-template.webp",
+        "serviceBillName": "oil-change-invoice-template.webp",
+        "serviceBillType": "image/webp",
+        "createdAt": "2026-02-12T16:43:29.344791",
+        "updatedAt": "2026-02-12T16:54:36.173024"
+    }
+]
+
+<button
+		type="button"
+		class="btn btn-outline-primary"
+		(click)="collapse.toggle()"
+		[attr.aria-expanded]="!isCollapsed"
+		aria-controls="collapseExample"
+	>
+		Add Image
+	</button>
+
+
+
+
+		<div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
+	<div class="card">
+		  <input #fileInput type="file" accept="image/*" class="form-control" (change)="onImageSelected($event)">
+
+        <button class="btn btn-primary mt-2 me-2" [disabled]="!selectedImageFile" (click)="uploadImage()">
+          Upload Image
+        </button>
+	</div>
+</div>
+
+
+
+FC
+Insurance
+Oil Service
+Tyre Service
+
+git remote add origin git@github-personal:Ameertheeink/Vehicle-UI.git
+git remote add origin git@github-personal:Ameertheeink/Vehicle.git
+git branch -M main
+git push -u origin main
